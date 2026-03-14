@@ -41,42 +41,55 @@ module.exports = {
         }
 
         // 5. Iniziamo a tirare i dadi!
-        let totale = 0;
-        let risultati = []; // Qui salveremo tutti i singoli tiri
+       let totale = 0;
+        let risultatiFormattati = [];
 
         for (let i = 0; i < quantita; i++) {
             const tiro = Math.floor(Math.random() * facce) + 1;
-            let tiroFormattato;
-            if (tiro === 1) {
-                tiroFormattato = `\u001b[31m${tiro}\u001b[0m`; // Rosso
-            } else if (tiro === facce) {
-                tiroFormattato = `\u001b[32m${tiro}\u001b[0m`; // Verde
-            } else {
-                tiroFormattato = `\u001b[0m${tiro}`; // Bianco/Default
-            }      
-            risultati.push(tiroFormattato); // Aggiungiamo il tiro alla lista
-            totale += tiro;       // Aggiungiamo il tiro al totale
-        }
+            totale += tiro;
 
-        // 6. Costruiamo il messaggio visivo
-        if(quantita>1){
+            // Logica Colore ANSI: solo se è un d20 applichiamo i critici
+            if (facce === 20) {
+                if (tiro === 1) {
+                    risultatiFormattati.push(`\u001b[31m${tiro}\u001b[0m`); // Rosso
+                } else if (tiro === 20) {
+                    risultatiFormattati.push(`\u001b[32m${tiro}\u001b[0m`); // Verde
+                } else {
+                    risultatiFormattati.push(`\u001b[0m${tiro}`); // Normale
+                }
+            } else {
+                // Per tutti gli altri dadi (d4, d6, ecc.) usiamo il colore standard
+                risultatiFormattati.push(`\u001b[0m${tiro}`);
+            }
+        }
         const embedDadi = new EmbedBuilder()
-            .setColor(0x0099FF)
-            .setTitle(`🎲 Hai tirato ${quantita}d${facce}`)
-            // Mostriamo i singoli tiri separati da virgola, e poi la somma totale in grassetto
-            .setDescription(`**Risultati:** ${risultati.join(', ')}\n\n**Totale:** **${totale}**`)
-            .setTimestamp();
-            await interaction.reply({ embeds: [embedDadi] });
+        .setColor(0x0099FF)
+        .setTitle(`🎲 Hai tirato ${quantita}d${facce}`)
+        .setTimestamp();
+
+        if(quantita>1){
+            embedDadi.setDescription(
+                `**Risultati:**\n` + 
+                `\`\`\`ansi\n${risultatiFormattati.join(', ')}\n\`\`\`\n` + 
+                `**Totale:** \`${totale}\``
+            );
+        }else{
+            if(facce===20)
+            {
+                if(totale===1) embedDadi.setColor(0x00FF0000);
+                if(totale===20) embedDadi.setColor(0x00FF00);
+                
+            }
+            embedDadi.setDescription(
+                `**Risultato:**\n` + 
+                `\`\`\`ansi\n${risultatiFormattati[0]}\n\`\`\``
+            );
         }
-        else {
-            const embedDadi = new EmbedBuilder()
-            .setColor(0x0099FF)
-            .setTitle(`🎲 Hai tirato ${quantita}d${facce}`)
-            // Mostriamo i singoli tiri separati da virgola, e poi la somma totale in grassetto
-            .setDescription(`**Risultato:** ${risultati.join(', ')}`)
-            .setTimestamp();
+        try {
             await interaction.reply({ embeds: [embedDadi] });
+        } catch (error) {
+            console.error("Errore durante l'invio dell'embed:", error);
+            await interaction.reply({ content: "Si è verificato un errore nell'invio del risultato.", ephemeral: true });
         }
-        
     }
 }
