@@ -30,13 +30,14 @@ module.exports = {
         // Se ha scritto solo "d20" senza numero davanti, match[1] è vuoto, quindi impostiamo 1 di default
         const quantita = match[1] ? parseInt(match[1]) : 1; 
         const facce = parseInt(match[2]);
+        const faccePermesse= [4,6,8,10,12,20,100];
 
         // 4. Sistemi di sicurezza (anti-troll)
         if (quantita < 1 || quantita > 100) {
             return interaction.reply({ content: 'Puoi tirare da 1 a un massimo di 100 dadi alla volta.', ephemeral: true });
         }
-        if (facce < 2 || facce > 100) {
-            return interaction.reply({ content: 'Il roll deve avere tra 2 e 100 facce.', ephemeral: true });
+        if (!faccePermesse.includes(facce)) {
+            return interaction.reply({ content: 'Il dado deve essere un dado esistente! (d4, d6, d8, d10, d12, d20, d100).', ephemeral: true });
         }
 
         // 5. Iniziamo a tirare i dadi!
@@ -45,7 +46,15 @@ module.exports = {
 
         for (let i = 0; i < quantita; i++) {
             const tiro = Math.floor(Math.random() * facce) + 1;
-            risultati.push(tiro); // Aggiungiamo il tiro alla lista
+            let tiroFormattato;
+            if (tiro === 1) {
+                tiroFormattato = `\u001b[31m${tiro}\u001b[0m`; // Rosso
+            } else if (tiro === facce) {
+                tiroFormattato = `\u001b[32m${tiro}\u001b[0m`; // Verde
+            } else {
+                tiroFormattato = `\u001b[0m${tiro}`; // Bianco/Default
+            }      
+            risultati.push(tiroFormattato); // Aggiungiamo il tiro alla lista
             totale += tiro;       // Aggiungiamo il tiro al totale
         }
 
@@ -57,15 +66,17 @@ module.exports = {
             // Mostriamo i singoli tiri separati da virgola, e poi la somma totale in grassetto
             .setDescription(`**Risultati:** ${risultati.join(', ')}\n\n**Totale:** **${totale}**`)
             .setTimestamp();
+            await interaction.reply({ embeds: [embedDadi] });
         }
         else {
             const embedDadi = new EmbedBuilder()
             .setColor(0x0099FF)
             .setTitle(`🎲 Hai tirato ${quantita}d${facce}`)
             // Mostriamo i singoli tiri separati da virgola, e poi la somma totale in grassetto
-            .setDescription(`**Totale:** **${totale}**`)
+            .setDescription(`**Risultato:** ${risultati.join(', ')}`)
             .setTimestamp();
+            await interaction.reply({ embeds: [embedDadi] });
         }
-        await interaction.reply({ embeds: [embedDadi] });
+        
     }
 }
