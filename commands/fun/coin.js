@@ -15,7 +15,7 @@ module.exports = {
             .setDescription(`La moneta è caduta su: ${result}!`)
             .setFooter({ text: `Richiesto da ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
             .setTimestamp()
-            .setColor(0x00ff00);  // Green color for better visuals
+            .setColor(0x00ff00);  
 
         await interaction.reply({ embeds: [embed] });
     }

@@ -17,7 +17,6 @@ module.exports = {
 		const commandsDir = path.join(__dirname, '..');
 		let fullPath = null;
 
-		// Search for the file in subfolders
 		const folders = fs.readdirSync(commandsDir).filter(item => {
 			const itemPath = path.join(commandsDir, item);
 			return fs.statSync(itemPath).isDirectory();

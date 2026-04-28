@@ -32,14 +32,13 @@ module.exports = {
             title = 'Scena da film! 🎬';
 			break;
 		}
-        // --- CREAZIONE DELL'EMBED ---
+
         const embed = new EmbedBuilder()
-            .setTitle(title) // Il titolo sopra la GIF
-            .setColor(0x0099FF) // Colore della barra laterale (Blu)
-            .setImage(gifUrl) // <--- QUESTO È IL COMANDO MAGICO: Mostra l'immagine grande
+            .setTitle(title) 
+            .setColor(0x0099FF) 
+            .setImage(gifUrl) 
             .setFooter({ text: `Requested from ${interaction.user.username}` });
 
-        // Inviamo l'embed invece del messaggio di testo semplice
         await interaction.reply({ embeds: [embed] });
     },
 };
