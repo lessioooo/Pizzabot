@@ -41,7 +41,8 @@ Ensure you have the following installed and configured on your local machine:
 ```
  ### Configuration
  Create a .env file in the root directory to securely store your environment variables and API keys. Do not commit this file to version control.
- ###Running the Bot
+ 
+ ### Running the Bot
  To start the bot, run the following command in your terminal:
  ```bash
   node index.js
