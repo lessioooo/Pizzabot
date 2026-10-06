@@ -3,6 +3,16 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { clientId, guildId } = require('./config.json'); // 2. Prende solo gli ID pubblici
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000; 
+
+app.get('/', (req, res) => res.send('Pizzabot è sveglio e operativo!'));
+
+// Lo '0.0.0.0' è obbligatorio per i container Docker su Render
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Dummy server avviato sulla porta ${port}`);
+});
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
